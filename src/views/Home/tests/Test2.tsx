@@ -3,7 +3,7 @@ import { Alert, Button, Steps } from 'antd'
 import Web3Methods from '../../../store/web3/methods'
 import BaseTest from './BaseTest'
 import { gwei } from '../../../utils'
-import { ContractReceipt } from 'ethers'
+import { ContractReceipt, ethers } from 'ethers'
 import { LoadingOutlined } from '@ant-design/icons'
 
 const Step = Steps.Step
@@ -40,7 +40,12 @@ const Test2: React.FC = () => {
       setStep(1)
       const b1 = await getErc721Balance()
       setErc721BalanceBefore(b1)
-      const tx = await mint()
+      const tx = await mint({
+        gasPrice: ethers.utils.parseUnits(
+          (parseInt(gwei(maxGasPrice)) + 5).toString(),
+          'gwei'
+        ),
+      })
       setTx(tx)
       setStep(2)
       const b2 = await getErc721Balance()
@@ -97,7 +102,16 @@ const Test2: React.FC = () => {
               <li>
                 <span>测试后</span>
                 <ul>
-                  {tx && <li>tx hash: {tx.transactionHash}</li>}
+                  {tx && (
+                    <li>
+                      tx hash:{' '}
+                      <a
+                        href={`https://testnet.bscscan.com/tx/${tx.transactionHash}`}
+                      >
+                        {tx.transactionHash}
+                      </a>
+                    </li>
+                  )}
                   <li>Erc721数量: {erc721BalanceAfter}</li>
                 </ul>
               </li>

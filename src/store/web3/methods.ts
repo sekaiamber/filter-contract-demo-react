@@ -14,7 +14,7 @@ interface useWeb3MethodProps {
   stateReady: StateReady
   getErc721Balance: () => Promise<string>
   updateState: () => Promise<void>
-  mint: () => Promise<ContractReceipt>
+  mint: (txOptions?: {}) => Promise<ContractReceipt>
 }
 
 interface StateReady {
@@ -85,11 +85,14 @@ function useWeb3Method(): useWeb3MethodProps {
     await updateWalletBalance()
   }, [updateMaxGasPrice, updateNftPrice, updateWalletBalance])
 
-  const mint = useCallback(async () => {
-    const contract = new Erc721MockContract(library.getSigner())
-    const tx = await contract.mint()
-    return tx
-  }, [currentAccount, canRun, library])
+  const mint = useCallback(
+    async (txOptions?: {}) => {
+      const contract = new Erc721MockContract(library.getSigner())
+      const tx = await contract.mint(1, txOptions)
+      return tx
+    },
+    [currentAccount, canRun, library]
+  )
 
   const getErc721Balance = useCallback(async () => {
     if (!canRun()) return '0'

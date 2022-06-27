@@ -97,7 +97,17 @@ const Test1: React.FC = () => {
               <li>
                 <span>测试后</span>
                 <ul>
-                  {tx && <li>tx hash: {tx.transactionHash}</li>}
+                  {tx && (
+                    <li>
+                      tx hash:{' '}
+                      <a
+                        href={`https://testnet.bscscan.com/tx/${tx.transactionHash}`}
+                        target="_blank"
+                      >
+                        {tx.transactionHash}
+                      </a>
+                    </li>
+                  )}
                   <li>Erc721数量: {erc721BalanceAfter}</li>
                 </ul>
               </li>
