@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { createContainer } from 'unstated-next'
 import FilterRuleContract from './contracts/filterRule'
 import Erc721MockContract from './contracts/erc721Mock'
@@ -11,38 +11,15 @@ interface useWeb3MethodProps {
   maxGasPrice: string
   nftPrice: string
   walletBalance: string
-  stateReady: StateReady
   getErc721Balance: () => Promise<string>
   updateState: () => Promise<void>
   mint: (txOptions?: {}) => Promise<ContractReceipt>
-}
-
-interface StateReady {
-  maxGasPrice: boolean
-  nftPrice: boolean
-  walletBalance: boolean
-  all: boolean
 }
 
 function useWeb3Method(): useWeb3MethodProps {
   const [maxGasPrice, setMaxGasPrice] = useState('0')
   const [nftPrice, setNftPrice] = useState('0')
   const [walletBalance, setWalletBalance] = useState('0')
-
-  const stateReady = useMemo<StateReady>(() => {
-    const gas = parseFloat(maxGasPrice) > 0
-    const nft = parseFloat(nftPrice) > 0
-    const balance = parseFloat(walletBalance) > 0.1
-
-    const all = gas && nft && balance
-
-    return {
-      maxGasPrice: gas,
-      nftPrice: nft,
-      walletBalance: balance,
-      all,
-    }
-  }, [maxGasPrice, nftPrice, walletBalance])
 
   const { currentAccount, library } = Web3.useContainer()
 
@@ -106,7 +83,6 @@ function useWeb3Method(): useWeb3MethodProps {
     maxGasPrice,
     nftPrice,
     walletBalance,
-    stateReady,
     getErc721Balance,
     updateState,
     mint,

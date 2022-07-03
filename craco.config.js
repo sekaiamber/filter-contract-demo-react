@@ -29,15 +29,15 @@ module.exports = {
   devServer: {
     proxy: {
       '/api/*': {
-        target: 'http://localhost:8080',
+        target: 'http://filterdemo.sekai.me/',
         changeOrigin: true,
         secure: false,
       },
-      '/assets/*': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      },
+      // '/assets/*': {
+      //   target: 'http://localhost:8080',
+      //   changeOrigin: true,
+      //   secure: false,
+      // },
     },
   },
 }

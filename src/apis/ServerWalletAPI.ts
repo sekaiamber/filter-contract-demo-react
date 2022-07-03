@@ -19,6 +19,37 @@ export interface reportData {
   displayDatetime: string
 }
 
+export interface WhitelistDBData {
+  id: number
+  address: string
+  amount: number
+}
+
+export type InQueueLogState =
+  | 'created'
+  | 'waiting'
+  | 'pending'
+  | 'resolved'
+  | 'rejected'
+  | 'error'
+
+export interface InQueueLogRawData {
+  blockNumber: number
+  data: string
+  transactionHash: string
+  user: string
+  amount: number
+  index: number
+}
+
+export interface InQueueLogDBData extends InQueueLogRawData {
+  id: number
+  state: InQueueLogState
+  exTransactionHash: string | null
+  exBlockNumber: number | null
+  errorMessage: string | null
+}
+
 export class ServerWalletAPI {
   private readonly axios: AxiosInstance
 
@@ -33,10 +64,25 @@ export class ServerWalletAPI {
     return null
   }
 
-  // TODO: example
-  async getReports(): Promise<reportData[]> {
-    const resp = await this.axios.get('/api/v1/reports')
-    const data = this.getResponseData<reportData[]>(resp.data)
+  async getWhitelist(address: string): Promise<WhitelistDBData> {
+    const resp = await this.axios.get(`/api/v1/filter/whitelist/${address}`)
+    const data = this.getResponseData<WhitelistDBData>(resp.data)
+    if (data) return data
+    throw new Error('fetch error')
+  }
+
+  async increaseWhitelistAmount(address: string): Promise<WhitelistDBData> {
+    const resp = await this.axios.post(
+      `/api/v1/filter/whitelist/${address}/request`
+    )
+    const data = this.getResponseData<WhitelistDBData>(resp.data)
+    if (data) return data
+    throw new Error('fetch error')
+  }
+
+  async getRelayTx(hash: string): Promise<InQueueLogDBData> {
+    const resp = await this.axios.get(`/api/v1/tx/${hash}`)
+    const data = this.getResponseData<InQueueLogDBData>(resp.data)
     if (data) return data
     throw new Error('fetch error')
   }

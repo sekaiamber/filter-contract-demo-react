@@ -5,6 +5,7 @@ import BaseTest from './BaseTest'
 import { gwei } from '../../../utils'
 import { ContractReceipt } from 'ethers'
 import { LoadingOutlined } from '@ant-design/icons'
+import System from '../../../store/system'
 
 const Step = Steps.Step
 
@@ -29,8 +30,8 @@ const Test1: React.FC = () => {
   const [erc721BalanceBefore, setErc721BalanceBefore] = useState('0')
   const [erc721BalanceAfter, setErc721BalanceAfter] = useState('0')
   const [tx, setTx] = useState<ContractReceipt>()
-  const { mint, maxGasPrice, getErc721Balance, stateReady } =
-    Web3Methods.useContainer()
+  const { mint, maxGasPrice, getErc721Balance } = Web3Methods.useContainer()
+  const { stateReady } = System.useContainer()
 
   const startTest = async (): Promise<void> => {
     try {
@@ -78,7 +79,7 @@ const Test1: React.FC = () => {
           type="primary"
           onClick={startTest}
           loading={step > 0 && !finish}
-          disabled={!stateReady.all}
+          disabled={!stateReady.test1}
         >
           测试Mint
         </Button>

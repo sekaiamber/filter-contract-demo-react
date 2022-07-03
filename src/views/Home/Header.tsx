@@ -8,14 +8,16 @@ import {
   CheckCircleOutlined,
   SyncOutlined,
   ClockCircleOutlined,
-  CloseCircleOutlined,
+  // CloseCircleOutlined,
 } from '@ant-design/icons'
+import System from '../../store/system'
 
 const Header: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const { connect, currentAccount } = Web3.useContainer()
-  const { updateState, maxGasPrice, nftPrice, walletBalance, stateReady } =
+  const { updateState, maxGasPrice, nftPrice, walletBalance } =
     Web3Methods.useContainer()
+  const { stateReady, relayWhitelistAmount } = System.useContainer()
 
   const handleConnect = (): void => {
     connect(ConnectorNames.Injected, () => {})
@@ -43,8 +45,9 @@ const Header: React.FC = () => {
         </Button>
       </div>
       <Divider orientation="left">状态</Divider>
-      <div>
+      <div style={{ marginBottom: 12 }}>
         <Space>
+          <span>链上状态：</span>
           <Tag
             color={stateReady.maxGasPrice ? 'success' : 'error'}
             icon={
@@ -90,6 +93,14 @@ const Header: React.FC = () => {
         </Space>
       </div>
       <div>
+        <Space>
+          <span>中继状态：</span>
+          <Tag color="success" icon={<CheckCircleOutlined />}>
+            Whitelist allow amount: {relayWhitelistAmount}
+          </Tag>
+        </Space>
+      </div>
+      {/* <div>
         <Tag
           color={stateReady.all ? 'success' : 'error'}
           icon={
@@ -98,7 +109,7 @@ const Header: React.FC = () => {
         >
           Ready for test
         </Tag>
-      </div>
+      </div> */}
     </>
   )
 }
