@@ -3,21 +3,21 @@
     "header": {
       "connect": "链接钱包 (Metamask / BSC Testnet)",
       "status": {
-        "title": "Status",
+        "title": "状态",
         "chain": {
-          "title": "On Chain: ",
-          "filter": "Filter Max Gas Price: {{gas}} gwei",
-          "price": "Nft Price: {{price}} BNB",
-          "balance": "Wallet Balance(>0.1): {{balance}}"
+          "title": "链上状态: ",
+          "filter": "Filter合约 gas price限制: {{gas}} gwei",
+          "price": "NFT价格: {{price}} BNB",
+          "balance": "钱包余额(>0.1): {{balance}}"
         },
         "relay": {
           "title":  "Relay: ",
-          "whitelist": "Whitelist allow amount: {{amount}}"
+          "whitelist": "Whitelist allowance: {{amount}}"
         }
       }
     },
     "test1": {
-      "title": "Test 1",
+      "title": "测试1",
       "description": "本测试模拟了一个普通用户进行mint的场景，这类用户一般不会参与gas war，在我们的规则中，超过 {{gas}} gwei 的交易将被合约拦截。\n\n这个测试流程为：\n1. 用户提交mint交易\n2. 调用ERC721合约\n3. 交易被Filter合约放行\n4. 用户收到nft\n\n流程如下图：",
       "process": {
         "user": "用户",
@@ -44,8 +44,8 @@
     },
     "test2": {
       "title": "测试2(当前允许量{{amount}})",
-      "description": "本测试模拟了一个限制用户进行mint的场景，采用了高gas来试图提前mint，在我们的规则中，超过 {{gas}} gwei 的交易将被去中心化合约拦截，我们使用 {{gas}} + 5 gwei 来进行交易；同时，在中继（relay）被规则拦截，导致交易被延迟拒绝。\n\n这个测试流程为：\n1. 用户提交mint交易\n2. 调用ERC721合约\n3. 交易被Filter合约规则拦截\n4. 用户被扣款，但是nft数量并没有增加\n5. 中继监测到事件，延迟 4s 判定，用户Whitelist allow amount为0，则交易被拒绝\n6. 用户获得退款\n\n流程如下图：",
-      "alert": "本次测试需要Whitelist allow amount为0，请使用测试3消耗允许量",
+      "description": "本测试模拟了一个限制用户进行mint的场景，采用了高gas来试图提前mint，在我们的规则中，超过 {{gas}} gwei 的交易将被去中心化合约拦截，我们使用 {{gas}} + 5 gwei 来进行交易；同时，在中继（relay）被规则拦截，导致交易被延迟拒绝。\n\n这个测试流程为：\n1. 用户提交mint交易\n2. 调用ERC721合约\n3. 交易被Filter合约规则拦截\n4. 用户被扣款，但是nft数量并没有增加\n5. 中继监测到事件，延迟 4s 判定，用户Whitelist allowance为0，则交易被拒绝\n6. 用户获得退款\n\n流程如下图：",
+      "alert": "本次测试需要Whitelist allowance为0，请使用测试3消耗允许量",
       "process": {
         "user": "用户",
         "mint": "Mint",
@@ -89,8 +89,8 @@
     },
     "test3": {
       "title": "测试3(当前允许量{{amount}})",
-      "description": "本测试模拟了一个限制用户（但是为白名单）进行mint的场景，采用了高gas来试图提前mint，在我们的规则中，超过 {{gas}} gwei 的交易将被去中心化合约拦截，我们使用 {{gas}} + 5 gwei 来进行交易；同时，在中继（relay）被规则放行，导致交易虽然被拦截，但是仍然被延迟放行。\n\n这个测试流程为：\n1. 用户提交mint交易\n2. 调用ERC721合约\n3. 交易被Filter合约规则拦截\n4. 用户被扣款，但是nft数量并没有增加\n5. 中继监测到事件，延迟 4s 判定，用户Whitelist allow amount大于0，则交易被放行\n6. 用户获得nft\n\n流程如下图：",
-      "alert": "本次测试需要Whitelist allow amount大于0，请使用下面按钮增加允许量",
+      "description": "本测试模拟了一个限制用户（但是为白名单）进行mint的场景，采用了高gas来试图提前mint，在我们的规则中，超过 {{gas}} gwei 的交易将被去中心化合约拦截，我们使用 {{gas}} + 5 gwei 来进行交易；同时，在中继（relay）被规则放行，导致交易虽然被拦截，但是仍然被延迟放行。\n\n这个测试流程为：\n1. 用户提交mint交易\n2. 调用ERC721合约\n3. 交易被Filter合约规则拦截\n4. 用户被扣款，但是nft数量并没有增加\n5. 中继监测到事件，延迟 4s 判定，用户Whitelist allowance大于0，则交易被放行\n6. 用户获得nft\n\n流程如下图：",
+      "alert": "本次测试需要Whitelist allowance大于0，请使用下面按钮增加允许量",
       "addAllow": "增加允许量",
       "process": {
         "user": "用户",
