@@ -5,26 +5,13 @@ import BaseTest from './BaseTest'
 import { gwei } from '../../../utils'
 import { ContractReceipt } from 'ethers'
 import { LoadingOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import System from '../../../store/system'
 
 const Step = Steps.Step
 
-const description = (
-  gasPrice: string
-): string => `本测试模拟了一个普通用户进行mint的场景，这类用户一般不会参与gas war，在我们的规则中，超过 ${gwei(
-  gasPrice
-)} gwei 的交易将被合约拦截。
-
-这个测试流程为：
-1. 用户提交mint交易
-2. 调用ERC721合约
-3. 交易被Filter合约放行
-4. 用户收到nft
-
-流程如下图：
-`
-
 const Test1: React.FC = () => {
+  const { t } = useTranslation('trans', { keyPrefix: 'test1' })
   const [finish, setFinish] = useState(false)
   const [step, setStep] = useState(0)
   const [erc721BalanceBefore, setErc721BalanceBefore] = useState('0')
@@ -57,22 +44,22 @@ const Test1: React.FC = () => {
 
   return (
     <BaseTest
-      title="测试1"
+      title={t('title')}
       description={
         <span style={{ whiteSpace: 'pre-line' }}>
-          {description(maxGasPrice)}
+          {t('description', { gas: gwei(maxGasPrice) })}
         </span>
       }
     >
       <Steps className="block" current={step}>
-        <Step title="用户" description="mint nft" />
+        <Step title={t('process.user')} description={t('process.mint')} />
         <Step
-          title="Erc721合约"
-          description="调用"
+          title={t('process.erc721')}
+          description={t('process.call')}
           icon={step === 1 && !finish ? <LoadingOutlined /> : undefined}
         />
-        <Step title="Filter合约" description="放行" />
-        <Step title="用户" description="获得 nft" />
+        <Step title={t('process.filter')} description={t('process.pass')} />
+        <Step title={t('process.user')} description={t('process.receive')} />
       </Steps>
       <div className="block">
         <Button
@@ -81,26 +68,29 @@ const Test1: React.FC = () => {
           loading={step > 0 && !finish}
           disabled={!stateReady.test1}
         >
-          测试Mint
+          {t('test')}
         </Button>
       </div>
       {finish && (
         <Alert
-          message="测试报告"
+          message={t('report.title')}
           description={
             <ul>
               <li>
-                <span>测试前</span>
+                <span>{t('report.before.title')}</span>
                 <ul>
-                  <li>Erc721数量: {erc721BalanceBefore}</li>
+                  <li>
+                    {t('report.before.erc721')}
+                    {erc721BalanceBefore}
+                  </li>
                 </ul>
               </li>
               <li>
-                <span>测试后</span>
+                <span>{t('report.after.title')}</span>
                 <ul>
                   {tx && (
                     <li>
-                      tx hash:{' '}
+                      {t('report.after.hash')}
                       <a
                         href={`https://testnet.bscscan.com/tx/${tx.transactionHash}`}
                         target="_blank"
@@ -109,7 +99,10 @@ const Test1: React.FC = () => {
                       </a>
                     </li>
                   )}
-                  <li>Erc721数量: {erc721BalanceAfter}</li>
+                  <li>
+                    {t('report.after.erc721')}
+                    {erc721BalanceAfter}
+                  </li>
                 </ul>
               </li>
             </ul>

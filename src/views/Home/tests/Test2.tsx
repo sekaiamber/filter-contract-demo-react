@@ -10,39 +10,12 @@ import serverWalletAPI, {
   InQueueLogDBData,
 } from '../../../apis/ServerWalletAPI'
 import useInterval from '../../../hooks/useInterval'
+import { useTranslation } from 'react-i18next'
 
 const Step = Steps.Step
 
-const description = (
-  gasPrice: string
-): string => `本测试模拟了一个限制用户进行mint的场景，采用了高gas来试图提前mint，在我们的规则中，超过 ${gwei(
-  gasPrice
-)} gwei 的交易将被去中心化合约拦截，我们使用 ${gwei(
-  gasPrice
-)} + 5 gwei 来进行交易；同时，在中继（relay）被规则拦截，导致交易被延迟拒绝。
-
-这个测试流程为：
-1. 用户提交mint交易
-2. 调用ERC721合约
-3. 交易被Filter合约规则拦截
-4. 用户被扣款，但是nft数量并没有增加
-5. 中继监测到事件，延迟 4s 判定，用户Whitelist allow amount为0，则交易被拒绝
-6. 用户获得退款
-
-流程如下图：
-`
-
-const RelayTxStateMap = {
-  created: '已创建',
-  waiting: '等待中',
-  pending: '已提交tx',
-  resolved: '已放行',
-  rejected: '已拒绝',
-  error: '出错',
-}
-
 export interface Test2BaseProps {
-  getDescription: (gasPrice: string) => string
+  description: string
   title: string
   disabled: boolean
   tips: ReactNode
@@ -51,13 +24,14 @@ export interface Test2BaseProps {
 }
 
 export const Test2Base: React.FC<Test2BaseProps> = ({
-  getDescription,
+  description,
   title,
   disabled,
   tips,
   step3,
   step4,
 }) => {
+  const { t } = useTranslation('trans', { keyPrefix: 'test2' })
   const [finish, setFinish] = useState(false)
   const [step, setStep] = useState(0)
   const [erc721BalanceBefore, setErc721BalanceBefore] = useState('0')
@@ -138,19 +112,21 @@ export const Test2Base: React.FC<Test2BaseProps> = ({
     <BaseTest
       title={title}
       description={
-        <span style={{ whiteSpace: 'pre-line' }}>
-          {getDescription(maxGasPrice)}
-        </span>
+        <span style={{ whiteSpace: 'pre-line' }}>{description}</span>
       }
     >
       <Steps className="block" current={step}>
-        <Step title="用户" description="mint nft" />
+        <Step title={t('process.user')} description={t('process.mint')} />
         <Step
-          title="Erc721合约"
-          description="调用"
+          title={t('process.erc721')}
+          description={t('process.call')}
           icon={step === 1 && !finish ? <LoadingOutlined /> : undefined}
         />
-        <Step title="Filter合约" description="拦截" status="error" />
+        <Step
+          title={t('process.filter')}
+          description={t('process.intercept')}
+          status="error"
+        />
         {step3}
         {step4}
       </Steps>
@@ -162,21 +138,27 @@ export const Test2Base: React.FC<Test2BaseProps> = ({
           loading={step > 0 && !finish}
           disabled={disabled}
         >
-          测试Mint
+          {t('test')}
         </Button>
       </div>
       {step >= 3 && (
         <Alert
-          message="中继状态"
+          message={t('relay.title')}
           className="block"
           description={
             relayTx ? (
               <ul>
-                <li>监听到交易: {tx?.transactionHash}</li>
-                <li>当前状态: {RelayTxStateMap[relayTx.state]}</li>
+                <li>
+                  {t('relay.tx')}
+                  {tx?.transactionHash}
+                </li>
+                <li>
+                  {t('relay.status')}
+                  {t(`state.${relayTx.state}`)}
+                </li>
                 {relayTx.exTransactionHash && (
                   <li>
-                    中继tx:{' '}
+                    {t('relay.relayTx')}
                     <a
                       href={`https://testnet.bscscan.com/tx/${relayTx.exTransactionHash}`}
                       target="_blank"
@@ -196,21 +178,24 @@ export const Test2Base: React.FC<Test2BaseProps> = ({
       )}
       {finish && (
         <Alert
-          message="测试报告"
+          message={t('report.title')}
           description={
             <ul>
               <li>
-                <span>测试前</span>
+                <span>{t('report.before.title')}</span>
                 <ul>
-                  <li>Erc721数量: {erc721BalanceBefore}</li>
+                  <li>
+                    {t('report.before.erc721')}
+                    {erc721BalanceBefore}
+                  </li>
                 </ul>
               </li>
               <li>
-                <span>测试后</span>
+                <span>{t('report.after.title')}</span>
                 <ul>
                   {tx && (
                     <li>
-                      tx hash:{' '}
+                      {t('report.after.hash')}
                       <a
                         href={`https://testnet.bscscan.com/tx/${tx.transactionHash}`}
                         target="_blank"
@@ -219,13 +204,19 @@ export const Test2Base: React.FC<Test2BaseProps> = ({
                       </a>
                     </li>
                   )}
-                  <li>Erc721数量: {erc721BalanceAfter}</li>
+                  <li>
+                    {t('report.after.erc721')}
+                    {erc721BalanceAfter}
+                  </li>
                   {relayTx && (
                     <>
-                      <li>中继状态: {RelayTxStateMap[relayTx.state]}</li>
+                      <li>
+                        {t('relay.status')}
+                        {t(`state.${relayTx.state}`)}
+                      </li>
                       {relayTx.exTransactionHash && (
                         <li>
-                          中继tx:{' '}
+                          {t('relay.relayTx')}
                           <a
                             href={`https://testnet.bscscan.com/tx/${relayTx.exTransactionHash}`}
                             target="_blank"
@@ -247,26 +238,32 @@ export const Test2Base: React.FC<Test2BaseProps> = ({
 }
 
 const Test2: React.FC = () => {
+  const { t } = useTranslation('trans', { keyPrefix: 'test2' })
   const { stateReady, relayWhitelistAmount } = System.useContainer()
   const { currentAccount } = Web3Methods.useContainer()
+  const { maxGasPrice } = Web3Methods.useContainer()
 
   return (
     <Test2Base
-      getDescription={description}
-      title={`测试2(当前允许量${relayWhitelistAmount})`}
+      description={t('description', { gas: gwei(maxGasPrice) })}
+      title={t('title', { amount: relayWhitelistAmount })}
       disabled={!stateReady.test2}
       tips={
         currentAccount &&
         relayWhitelistAmount !== 0 && (
-          <Alert
-            className="block"
-            description="本次测试需要Whitelist allow amount为0，请使用测试3消耗允许量"
-            type="error"
-          />
+          <Alert className="block" description={t('alert')} type="error" />
         )
       }
-      step3={<Step title="中继" description="拒绝" status="error" />}
-      step4={<Step title="用户" description="获得退款" />}
+      step3={
+        <Step
+          title={t('process.relay')}
+          description={t('process.reject')}
+          status="error"
+        />
+      }
+      step4={
+        <Step title={t('process.user')} description={t('process.refund')} />
+      }
     />
   )
 }

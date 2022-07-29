@@ -8,11 +8,15 @@ import {
   CheckCircleOutlined,
   SyncOutlined,
   ClockCircleOutlined,
+  TranslationOutlined,
   // CloseCircleOutlined,
 } from '@ant-design/icons'
 import System from '../../store/system'
+import { useTranslation } from 'react-i18next'
+import i18n from '../../i18n'
 
 const Header: React.FC = () => {
+  const { t } = useTranslation('trans', { keyPrefix: 'header' })
   const [loading, setLoading] = useState(false)
   const { connect, currentAccount } = Web3.useContainer()
   const { updateState, maxGasPrice, nftPrice, walletBalance } =
@@ -34,20 +38,32 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <Divider orientation="left">链接钱包</Divider>
-      <div>
+      <div
+        style={{
+          marginTop: 24,
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
         <Button
           type="primary"
           onClick={handleConnect}
           disabled={!!currentAccount}
         >
-          {currentAccount ?? '链接钱包 (Metamask / BSC Testnet)'}
+          {currentAccount ?? t('connect')}
         </Button>
+        <Button
+          type="primary"
+          icon={<TranslationOutlined />}
+          onClick={async () =>
+            await i18n.changeLanguage(i18n.language === 'en' ? 'zh' : 'en')
+          }
+        />
       </div>
-      <Divider orientation="left">状态</Divider>
+      <Divider orientation="left">{t('status.title')}</Divider>
       <div style={{ marginBottom: 12 }}>
         <Space>
-          <span>链上状态：</span>
+          <span>{t('status.chain.title')}</span>
           <Tag
             color={stateReady.maxGasPrice ? 'success' : 'error'}
             icon={
@@ -60,7 +76,7 @@ const Header: React.FC = () => {
               )
             }
           >
-            Filter Max Gas Price: {gwei(maxGasPrice)} gwei
+            {t('status.chain.filter', { gas: gwei(maxGasPrice) })}
           </Tag>
           <Tag
             color={stateReady.nftPrice ? 'success' : 'error'}
@@ -74,7 +90,7 @@ const Header: React.FC = () => {
               )
             }
           >
-            Nft Price: {eth(nftPrice)} BNB
+            {t('status.chain.price', { price: eth(nftPrice) })}
           </Tag>
           <Tag
             color={stateReady.walletBalance ? 'success' : 'error'}
@@ -88,15 +104,19 @@ const Header: React.FC = () => {
               )
             }
           >
-            Wallet Balance(&gt;0.1): {parseFloat(eth(walletBalance)).toFixed(2)}
+            {t('status.chain.balance', {
+              balance: parseFloat(eth(walletBalance)).toFixed(2),
+            })}
           </Tag>
         </Space>
       </div>
       <div>
         <Space>
-          <span>中继状态：</span>
+          <span>{t('status.relay.title')}</span>
           <Tag color="success" icon={<CheckCircleOutlined />}>
-            Whitelist allow amount: {relayWhitelistAmount}
+            {t('status.relay.whitelist', {
+              amount: relayWhitelistAmount,
+            })}
           </Tag>
         </Space>
       </div>

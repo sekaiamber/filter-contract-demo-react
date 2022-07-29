@@ -1,4 +1,103 @@
 {
   "trans": {
+    "header": {
+      "connect": "Connect Wallet (Metamask / BSC Testnet)",
+      "status": {
+        "title": "Status",
+        "chain": {
+          "title": "On Chain: ",
+          "filter": "Filter Max Gas Price: {{gas}} gwei",
+          "price": "Nft Price: {{price}} BNB",
+          "balance": "Wallet Balance(>0.1): {{balance}}"
+        },
+        "relay": {
+          "title":  "Relay: ",
+          "whitelist": "Whitelist allowance: {{amount}}"
+        }
+      }
+    },
+    "test1": {
+      "title": "Test 1",
+      "description": "This test simulates a case where a normal user minting NFT. Such users generally do not participate in the gas war. Under our rules, transactions exceeding {{gas}} gwei will be intercepted by the contract.\n\nThe test process is:\n1. User submits mint transaction\n2. Call the ERC721 contract\n3. The transaction is released by the Filter contract\n4. User receives NFT\n\nThe process is as follows:",
+      "process": {
+        "user": "User",
+        "mint": "Mint",
+        "erc721": "Erc721 Contract",
+        "call": "Call",
+        "filter": "Filter Contract",
+        "pass": "Pass",
+        "receive": "Receive NFT"
+      },
+      "test": "Test Mint",
+      "report": {
+        "title": "Test report",
+        "before": {
+          "title": "Before test",
+          "erc721": "Erc721 amount: "
+        },
+        "after": {
+          "title": "After test",
+          "hash": "Tx Hash: ",
+          "erc721": "Erc721 amount: "
+        }
+      }
+    },
+    "test2": {
+      "title": "Test 2 (Current allowance {{amount}})",
+      "description": "This test simulates a case where a suspicious user minting NFT, who are using high gas to try to mint in advance. Under our rules, transactions exceeding {{gas}} gwei will be intercepted by the Filter contract, we use {{gas}} + 5 gwei to conduct the transaction; at the same time, the relay will reject this request, causing the transaction to be delayed and rejected.\n\nThe test process is:\n1. User submits mint transaction\n2. Call the ERC721 contract\n3. The transaction is intercepted by the Filter contract rules\n4. The user was debited, but the number of nfts did not increase\n5. The relay detects the event, delays the decision for 4s, and the user Whitelist allowance is 0, then the request is rejected\n6. User gets refund\n\nThe process is as follows:",
+      "alert": "This test requires a Whitelist allowance of 0, please use test 3 to consume the allowance",
+      "process": {
+        "user": "User",
+        "mint": "Mint",
+        "erc721": "Erc721 Contract",
+        "call": "Call",
+        "filter": "Filter Contract",
+        "pass": "Pass",
+        "intercept": "Intercept",
+        "receive": "Receive nft",
+        "relay": "Relay",
+        "reject": "Reject",
+        "refund": "Receive refund"
+      },
+      "test": "Test Mint",
+      "relay": {
+        "title": "Relay Status",
+        "tx": "Transaction detected: ",
+        "status": "Current status: ",
+        "relayTx": "Relay tx: "
+      },
+      "report": {
+        "title": "Test report",
+        "before": {
+          "title": "Before test",
+          "erc721": "Erc721 amount: "
+        },
+        "after": {
+          "title": "After test",
+          "hash": "Tx Hash: ",
+          "erc721": "Erc721 amount: "
+        }
+      },
+      "state": {
+        "created": "Created",
+        "waiting": "Waiting",
+        "pending": "Pending",
+        "resolved": "Resolved",
+        "rejected": "Rejected",
+        "error": "Error"
+      }
+    },
+    "test3": {
+      "title": "Test 3 (Current allowance {{amount}})",
+      "description": "This test simulates a case where  a suspicious user minting NFT, who are using high gas to try to mint in advance. Under our rules, transactions exceeding {{gas}} gwei will be intercepted by the Filter contract, we use {{gas} } + 5 gwei to conduct the transaction; at the same time, the relay will resolve this request, resulting the transaction to be delayed, but still success.\n\nThe test process is:\n1. User submits mint transaction\n2. Call the ERC721 contract\n3. The transaction is intercepted by the Filter contract rules\n4. The user was debited, but the number of nfts did not increase\n5. The relay detects the event, delays the decision for 4s, and the user Whitelist allowance is greater than 0, then the transaction is resolved\n6. User receives nft\n\nThe process is as follows:",
+      "alert": "This test requires a Whitelist allowance > 0, please use test 3 to consume the allowance",
+      "addAllow": "Increase allowance",
+      "process": {
+        "user": "User",
+        "relay": "Relay",
+        "pass": "Pass",
+        "receive": "Receive NFT"
+      }
+    }
   }
 }

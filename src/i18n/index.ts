@@ -10,8 +10,8 @@ i18n.use(initReactI18next).init({
     zh,
     en,
   },
-  lng: LocalCache.getI18nLng() ?? 'zh',
-  fallbackLng: 'zh',
+  lng: LocalCache.getI18nLng() ?? 'en',
+  fallbackLng: 'en',
   interpolation: {
     escapeValue: false,
   },
